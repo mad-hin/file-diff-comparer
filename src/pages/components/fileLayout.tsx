@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
     console.log(rowNumber, window.innerHeight);
 }
 
-export default () => {
+export default function FileLayout() {
     const [visible, setVisible] = React.useState(false);
     const handler = () => setVisible(true);
     const closeHandler = () => {
