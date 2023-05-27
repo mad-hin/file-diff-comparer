@@ -8,9 +8,9 @@ The first aim of the project is due to one of the programming courses I am takin
 ## Features
 - [x] Compare two files
 - [x] Show the differences between the files with git diff style
+- [x]  Support file upload
 
 ## Future work
-- [ ] Support file upload
 - [ ] Support file drag and drop
 
 ## Requirements
