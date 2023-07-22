@@ -1,4 +1,5 @@
-import { Button, Grid, Modal, Textarea} from '@nextui-org/react';
+import { Button, Group, Modal, Textarea } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import React from "react";
 import ReactDiffViewer from 'react-diff-viewer';
 
@@ -10,22 +11,20 @@ if (typeof window !== 'undefined') {
 }
 
 export default function FileLayout() {
-    const[visible, setVisible] = React.useState(false);
-    const handler = () => setVisible(true);
-    const closeHandler = () => {
-        setVisible(false);
-        setNewCode("");
-        setOldCode("");
-        console.log("closed");
-    };
+    const [opened, { open, close }] = useDisclosure(false);
 
     const [oldCode, setOldCode] = React.useState("");
     const [newCode, setNewCode] = React.useState("");
 
+    const clearText = () => {
+        setOldCode("");
+        setNewCode("");
+    }
+    
     // adjust the row number according to the screen size
     let rowNumber = 20;
     if (typeof window !== 'undefined') {
-        rowNumber = window.innerHeight / 60;
+        rowNumber = window.innerHeight / 80;
         console.log(rowNumber, window.innerHeight);
     }
 
@@ -73,7 +72,7 @@ export default function FileLayout() {
                 </div>
             </div> */}
 
-            <Grid.Container gap={2}>
+            {/* <Grid.Container gap={2}>
                 <Grid xs={12} md={6} >
                     <Textarea
                         placeholder="File 1 content"
@@ -100,7 +99,35 @@ export default function FileLayout() {
                         }}
                     />
                 </Grid>
-            </Grid.Container>
+            </Grid.Container> */}
+            <Group grow>
+                <Textarea
+                    placeholder="File 1 content"
+                    autosize
+                    minRows={rowNumber}
+                    maxRows={rowNumber}
+                    variant="filled"
+                    radius='lg'
+                    value={oldCode}
+                    onChange={(e) => {
+                        setOldCode(e.target.value);
+                    }}
+                    size="lg"
+                />
+                <Textarea
+                    placeholder="File 2 content"
+                    autosize
+                    minRows={rowNumber}
+                    maxRows={rowNumber}
+                    variant="filled"
+                    radius='lg'
+                    value={newCode}
+                    onChange={(e) => {
+                        setNewCode(e.target.value);
+                    }}
+                    size="lg"
+                />
+            </Group>
 
             <div className="text-2xl text-center py-8 ">
                 or upload the files
@@ -131,36 +158,29 @@ export default function FileLayout() {
                 </div>
             </div>
             <div className='flex flex-col items-center justify-center py-10' >
-                <Button
-                    className="bg-green-800 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    onPress={
-                        handler
-                        
-                    }>
-                    Compare
-                </Button>
+                <Group position="center">
+                    <Button onClick={clearText} color='red' variant="filled" className='bg-red-700' size="lg" radius="md">
+                        Clear All
+                    </Button>
+                    <Button onClick={open} color='green' variant="filled" className='bg-green-700' size="lg" radius="md">
+                        Compare
+                    </Button>
+                </Group>
                 <Modal
-                    open={visible}
-                    onClose={closeHandler}
-                    blur
-                    width='80%'
-                    // noPadding
-                    closeButton
-                    preventClose
-                    className='bg-gray-50 dark:bg-gray-800'
+                    opened={opened}
+                    onClose={close}
+                    size="95%"
+                    closeOnClickOutside={false}
+                    closeOnEscape={false}
+                    title="Result"
                 >
-                    <Modal.Body
-                        autoMargin
-                        color='gray-700'
-                    >
-                        <ReactDiffViewer
-                            oldValue={oldCode}
-                            newValue={newCode}
-                            splitView={true}
-                            showDiffOnly={false}
-                            // useDarkTheme={true}
-                        />
-                   </Modal.Body>
+                    <ReactDiffViewer
+                        oldValue={oldCode}
+                        newValue={newCode}
+                        splitView={true}
+                        showDiffOnly={false}
+                    // useDarkTheme={true}
+                    />
                 </Modal>
 
             </div>
