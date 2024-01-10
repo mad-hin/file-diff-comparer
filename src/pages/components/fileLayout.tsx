@@ -56,50 +56,6 @@ export default function FileLayout() {
     return (
         <div>
             {/* Text area */}
-            {/* <div className="flex flex-row ">
-                <div className="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                    <div className="px-4 bg-white rounded-t-lg dark:bg-gray-700">
-                        <label className="sr-only">Text Area 1</label>
-                        <textarea id="Text Area 1" className="w-full px-0 h-96 text-sm text-gray-900 bg-white border-0 dark:bg-gray-700 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="File 1 content" ></textarea>
-                    </div>
-                </div>
-                <div className="px-5" />
-                <div className="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                    <div className="px-4 bg-white rounded-t-lg dark:bg-gray-700">
-                        <label className="sr-only">Text Area 2</label>
-                        <textarea id="Text Area 2" className="w-full px-0 h-96 text-sm text-gray-900 bg-white border-0 dark:bg-gray-700 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="File 2 content"></textarea>
-                    </div>
-                </div>
-            </div> */}
-
-            {/* <Grid.Container gap={2}>
-                <Grid xs={12} md={6} >
-                    <Textarea
-                        placeholder="File 1 content"
-                        fullWidth={true}
-                        bordered
-                        size="xl"
-                        rows={rowNumber}
-                        value={oldCode}
-                        onChange={(e) => {
-                            setOldCode(e.target.value);
-                        }}
-                    />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Textarea
-                        placeholder="File 2 content"
-                        fullWidth={true}
-                        bordered
-                        size="xl"
-                        rows={rowNumber}
-                        value={newCode}
-                        onChange={(e) => {
-                            setNewCode(e.target.value);
-                        }}
-                    />
-                </Grid>
-            </Grid.Container> */}
             <Group grow>
                 <Textarea
                     placeholder="File 1 content"
@@ -158,7 +114,7 @@ export default function FileLayout() {
                 </div>
             </div>
             <div className='flex flex-col items-center justify-center py-10' >
-                <Group position="center">
+                <Group justify="center">
                     <Button onClick={clearText} color='red' variant="filled" className='bg-red-700' size="lg" radius="md">
                         Clear All
                     </Button>
