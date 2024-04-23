@@ -13,7 +13,7 @@ const merriweather = Merriweather(
 
 export default function Home() {
   return (
-    <main className={`${merriweather.className} bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-300`}>
+    <main className={`${merriweather.className} bg-gray-700 text-gray-300`}>
       <Head>
         <title>File Comparer</title>
       </Head>
