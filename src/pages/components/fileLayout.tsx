@@ -1,13 +1,45 @@
-import { Button, Group, Modal, Textarea } from '@mantine/core';
+import { Button, Group, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React from "react";
 import ReactDiffViewer from 'react-diff-viewer';
 
-// adjust the row number according to the screen size
-let rowNumber = 20;
-if (typeof window !== 'undefined') {
-    rowNumber = window.innerHeight / 40;
-    console.log(rowNumber, window.innerHeight);
+function LineNumberedTextarea({ placeholder, value, onChange }: {
+    placeholder: string;
+    value: string;
+    onChange: (value: string) => void;
+}) {
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const lineNumbersRef = React.useRef<HTMLDivElement>(null);
+
+    const lineCount = value ? value.split('\n').length : 1;
+    const lines = Array.from({ length: lineCount }, (_, i) => i + 1);
+
+    const handleScroll = () => {
+        if (textareaRef.current && lineNumbersRef.current) {
+            lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+        }
+    };
+
+    return (
+        <div className="flex-1 min-h-0 flex rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+                ref={lineNumbersRef}
+                className="overflow-hidden select-none text-right py-4 px-3 text-sm leading-6 text-gray-400 dark:text-gray-500 bg-gray-200 dark:bg-gray-700"
+            >
+                {lines.map((n) => (
+                    <div key={n}>{n}</div>
+                ))}
+            </div>
+            <textarea
+                ref={textareaRef}
+                className="w-full h-full resize-none bg-transparent dark:text-gray-200 py-4 px-3 text-sm leading-6 focus:outline-none"
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onScroll={handleScroll}
+            />
+        </div>
+    );
 }
 
 export default function FileLayout() {
@@ -15,149 +47,107 @@ export default function FileLayout() {
 
     const [oldCode, setOldCode] = React.useState("");
     const [newCode, setNewCode] = React.useState("");
+    const [isDraggingFile1, setIsDraggingFile1] = React.useState(false);
+    const [isDraggingFile2, setIsDraggingFile2] = React.useState(false);
 
     const clearText = () => {
         setOldCode("");
         setNewCode("");
     }
 
-    // adjust the row number according to the screen size
-    let rowNumber = 20;
-    if (typeof window !== 'undefined') {
-        rowNumber = window.innerHeight / 80;
-        console.log(rowNumber, window.innerHeight);
-    }
-
-    const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target?.files?.[0];
-        const id = event.target?.id;
-
-        if (!file) return; // there does not exist a file
-
+    const processFile = (file: File, target: "file1" | "file2") => {
         const reader = new FileReader();
         reader.onload = () => {
             const code = reader.result as string;
-            console.log(code);
-            // Do something with the file contents...
-
-            if (id === "file1") {
+            if (target === "file1") {
                 setOldCode(code);
-                console.log(oldCode);
-                // Do something with the old code...
             } else {
                 setNewCode(code);
-                console.log(newCode);
-                // Do something with the new code...
             }
         };
         reader.readAsText(file);
     };
 
+    const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target?.files?.[0];
+        const id = event.target?.id as "file1" | "file2";
+        if (!file) return;
+        processFile(file, id);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLLabelElement>, target: "file1" | "file2") => {
+        e.preventDefault();
+        if (target === "file1") setIsDraggingFile1(false);
+        else setIsDraggingFile2(false);
+        const file = e.dataTransfer.files[0];
+        if (file) processFile(file, target);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLLabelElement>, target: "file1" | "file2") => {
+        e.preventDefault();
+        if (target === "file1") setIsDraggingFile1(true);
+        else setIsDraggingFile2(true);
+    };
+
+    const handleDragLeave = (_e: React.DragEvent<HTMLLabelElement>, target: "file1" | "file2") => {
+        if (target === "file1") setIsDraggingFile1(false);
+        else setIsDraggingFile2(false);
+    };
+
     return (
-        <div>
-            {/* Text area */}
-            {/* <div className="flex flex-row ">
-                <div className="w-full border border-gray-200 rounded-lg bg-gray-700 border-gray-600">
-                    <div className="px-4 bg-white rounded-t-lg bg-gray-700">
-                        <label className="sr-only">Text Area 1</label>
-                        <textarea id="Text Area 1" className="w-full px-0 h-96 text-sm text-gray-900 bg-white border-0 bg-gray-700 focus:ring-0 text-white placeholder-gray-400" placeholder="File 1 content" ></textarea>
-                    </div>
-                </div>
-                <div className="px-5" />
-                <div className="w-full border border-gray-200 rounded-lg bg-gray-700 border-gray-600">
-                    <div className="px-4 bg-white rounded-t-lg bg-gray-700">
-                        <label className="sr-only">Text Area 2</label>
-                        <textarea id="Text Area 2" className="w-full px-0 h-96 text-sm text-gray-900 bg-white border-0 bg-gray-700 focus:ring-0 text-white placeholder-gray-400" placeholder="File 2 content"></textarea>
-                    </div>
-                </div>
-            </div> */}
-
-            {/* <Grid.Container gap={2}>
-                <Grid xs={12} md={6} >
-                    <Textarea
-                        placeholder="File 1 content"
-                        fullWidth={true}
-                        bordered
-                        size="xl"
-                        rows={rowNumber}
-                        value={oldCode}
-                        onChange={(e) => {
-                            setOldCode(e.target.value);
-                        }}
-                    />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Textarea
-                        placeholder="File 2 content"
-                        fullWidth={true}
-                        bordered
-                        size="xl"
-                        rows={rowNumber}
-                        value={newCode}
-                        onChange={(e) => {
-                            setNewCode(e.target.value);
-                        }}
-                    />
-                </Grid>
-            </Grid.Container> */}
-            <Group grow>
-                <Textarea
+        <div className="flex flex-col flex-1 min-h-0">
+            {/* Text areas - fills remaining space */}
+            <div className="flex flex-row gap-5 flex-1 min-h-0">
+                <LineNumberedTextarea
                     placeholder="File 1 content"
-                    autosize
-                    minRows={rowNumber}
-                    maxRows={rowNumber}
-                    variant="filled"
-                    radius='lg'
                     value={oldCode}
-                    onChange={(e) => {
-                        setOldCode(e.target.value);
-                    }}
-                    size="lg"
+                    onChange={setOldCode}
                 />
-                <Textarea
+                <LineNumberedTextarea
                     placeholder="File 2 content"
-                    autosize
-                    minRows={rowNumber}
-                    maxRows={rowNumber}
-                    variant="filled"
-                    radius='lg'
                     value={newCode}
-                    onChange={(e) => {
-                        setNewCode(e.target.value);
-                    }}
-                    size="lg"
+                    onChange={setNewCode}
                 />
-            </Group>
+            </div>
 
-            <div className="text-2xl text-center py-8 ">
+            <div className="text-xl text-center py-6 shrink-0">
                 or upload the files
             </div>
 
             {/* File upload */}
-            <div className="flex flex-row ">
-                <div className="flex-1 items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-48 border-2  border-dashed rounded-lg cursor-pointer hover:bg-bray-800 bg-gray-700  border-gray-600 hover:border-gray-500 hover:bg-gray-600">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <p className="mb-2 text-sm text-gray-400"><span className="font-semibold">Click to upload</span></p>
-                            <p className="text-xs text-gray-400">TXT file</p>
+            <div className="flex flex-row gap-5 shrink-0">
+                <div className="flex-1">
+                    <label
+                        className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer ${isDraggingFile1 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 'border-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'}`}
+                        onDrop={(e) => handleDrop(e, "file1")}
+                        onDragOver={(e) => handleDragOver(e, "file1")}
+                        onDragLeave={(e) => handleDragLeave(e, "file1")}
+                    >
+                        <div className="flex flex-col items-center justify-center">
+                            <svg aria-hidden="true" className="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p className="text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click or drag file to upload</span></p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">TXT file</p>
                         </div>
                         <input id="file1" type="file" className="hidden" accept=".txt" onChange={onFileUpload} />
                     </label>
                 </div>
-                <div className="px-5" />
-                <div className="flex-1 items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-bray-800 bg-gray-700  border-gray-600 hover:border-gray-500 hover:bg-gray-600">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <p className="mb-2 text-sm text-gray-400"><span className="font-semibold">Click to upload</span></p>
-                            <p className="text-xs text-gray-400">TXT file</p>
+                <div className="flex-1">
+                    <label
+                        className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer ${isDraggingFile2 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 'border-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'}`}
+                        onDrop={(e) => handleDrop(e, "file2")}
+                        onDragOver={(e) => handleDragOver(e, "file2")}
+                        onDragLeave={(e) => handleDragLeave(e, "file2")}
+                    >
+                        <div className="flex flex-col items-center justify-center">
+                            <svg aria-hidden="true" className="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p className="text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click or drag file to upload</span></p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">TXT file</p>
                         </div>
                         <input id="file2" type="file" className="hidden" accept=".txt" onChange={onFileUpload} />
                     </label>
                 </div>
             </div>
-            <div className='flex flex-col items-center justify-center py-10' >
+            <div className='flex flex-col items-center justify-center py-6 shrink-0' >
                 <Group position="center">
                     <Button onClick={clearText} color='red' variant="filled" className='bg-red-700' size="lg" radius="md">
                         Clear All
@@ -173,14 +163,19 @@ export default function FileLayout() {
                     closeOnClickOutside={false}
                     closeOnEscape={false}
                     title="Result"
+                    transitionProps={{ duration: 0 }}
                 >
-                    <ReactDiffViewer
-                        oldValue={oldCode}
-                        newValue={newCode}
-                        splitView={true}
-                        showDiffOnly={false}
-                    // useDarkTheme={true}
-                    />
+                    {oldCode === newCode ? (
+                        <p className="text-center text-lg text-gray-500 py-8">No difference</p>
+                    ) : (
+                        <ReactDiffViewer
+                            oldValue={oldCode}
+                            newValue={newCode}
+                            splitView={true}
+                            showDiffOnly={true}
+                            useDarkTheme={true}
+                        />
+                    )}
                 </Modal>
 
             </div>
