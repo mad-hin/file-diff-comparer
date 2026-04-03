@@ -1,9 +1,9 @@
 import Head from "next/head";
 import FileLayout from "./components/fileLayout";
+import MobileFileLayout from "./components/mobileFileLayout";
 import Footer from "./components/footer";
 import { Merriweather } from 'next/font/google'
 
-// If loading a variable font, you don't need to specify the font weight
 const merriweather = Merriweather(
   {
     weight: '400',
@@ -17,11 +17,16 @@ export default function Home() {
       <Head>
         <title>File Comparer</title>
       </Head>
-      <h1 className="text-3xl md:text-5xl font-bold py-4 text-center shrink-0">File Comparer</h1>
-      <div className="px-10 flex-1 flex flex-col min-h-0">
+      <h1 className="text-xl md:text-5xl font-bold py-2 md:py-4 text-center shrink-0">File Comparer</h1>
+      {/* Desktop layout */}
+      <div className="hidden md:flex px-10 flex-1 flex-col min-h-0">
         <FileLayout />
       </div>
-      <div className="px-10 shrink-0">
+      {/* Mobile layout */}
+      <div className="flex md:hidden flex-1 flex-col min-h-0">
+        <MobileFileLayout />
+      </div>
+      <div className="px-4 md:px-10 shrink-0">
         <Footer />
       </div>
     </main>

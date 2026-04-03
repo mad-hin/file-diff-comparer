@@ -3,10 +3,10 @@ export default function Footer() {
 
     return (
         <div className=" dark:bg-gray-700">
-            <div className="max-w-6xl  mx-auto px-4 h-[10vh] flex items-center">
-                <div className={`w-full flex flex-col space-y-4 md:space-y-0 md:flex-row justify-between md:items-center`}>
+            <div className="max-w-6xl mx-auto px-4 py-2 md:h-[10vh] md:py-0 flex items-center">
+                <div className={`w-full flex flex-row justify-between items-center`}>
                     <div>
-                        <p className={`font-serif text-gray-300"`}>Copyright &copy; {currentYear} Marco Tam. All Rights Reserved.</p>
+                        <p className="font-serif text-gray-300 text-xs md:text-base">Copyright &copy; {currentYear} Marco Tam. All Rights Reserved.</p>
                     </div>
                     <div className="space-x-4 flex flex-row items-center">
                         <a
