@@ -13,13 +13,15 @@ const merriweather = Merriweather(
 
 export default function Home() {
   return (
-    <main className={`${merriweather.className} bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-300`}>
+    <main className={`${merriweather.className} h-screen flex flex-col max-w-full overflow-hidden bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-300`}>
       <Head>
         <title>File Comparer</title>
       </Head>
-      <h1 className="text-3xl md:text-5xl font-bold py-12 text-center">File Comparer</h1>
-      <div className="px-10">
+      <h1 className="text-3xl md:text-5xl font-bold py-4 text-center shrink-0">File Comparer</h1>
+      <div className="px-10 flex-1 flex flex-col min-h-0">
         <FileLayout />
+      </div>
+      <div className="px-10 shrink-0">
         <Footer />
       </div>
     </main>

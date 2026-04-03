@@ -9,9 +9,7 @@ The first aim of the project is due to one of the programming courses I am takin
 - [x] Compare two files
 - [x] Show the differences between the files with git diff style
 - [x] Support file upload
-
-## Future work
-- [ ] Support file drag and drop
+- [x] Support file drag and drop
 
 ## Requirements
 - Node.js
